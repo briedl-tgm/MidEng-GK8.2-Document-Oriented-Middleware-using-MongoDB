@@ -20,47 +20,21 @@ public class Application implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		repository.deleteAll(); // Startet jedes Mal mit einer sauberen DB
 
-		// Initialize product data repository
-		repository.deleteAll();
+		String[] categories = {"Getraenk", "Waschmittel", "Tierfutter", "Reinigung", "Elektronik", "Obst"};
+		String[] warehouses = {"W-1", "W-2", "W-3", "W-4", "W-5"};
 
-		// save a couple of product data
-		repository.save(new ProductData("1","00-443175","Bio Orangensaft Sonne","Getraenk", 2500));
-		repository.save(new ProductData("1","00-871895","Bio Apfelsaft Gold","Getraenk", 3420));
-		repository.save(new ProductData("1","01-926885","Ariel Waschmittel Color","Waschmittel", 478));
-		repository.save(new ProductData("1","02-234811","Mampfi Katzenfutter Rind","Tierfutter", 1324));
-		repository.save(new ProductData("2","03-893173","Saugstauberbeutel Ingres","Reinigung", 7390));
-		System.out.println();
+		for (int i = 1; i <= 300; i++) {
+			String wId = warehouses[i % warehouses.length];
+			String cat = categories[i % categories.length];
+			String pId = String.format("P-%04d", i);
+			String pName = "Testprodukt " + i;
+			double qty = Math.floor(Math.random() * 500); // Zufällige Menge 0-500
 
-		// fetch all products
-		System.out.println("ProductData found with findAll():");
-		System.out.println("-------------------------------");
-		for (ProductData productdata : repository.findAll()) {
-			System.out.println(productdata);
+			repository.save(new ProductData(wId, pId, pName, cat, qty));
 		}
-		System.out.println();
-
-		// Fetch single product
-		System.out.println("Record(s) found with ProductID(\"00-871895\"):");
-		System.out.println("--------------------------------");
-		System.out.println(repository.findByProductID("00-871895"));
-		System.out.println();
-
-		// Fetch all products of Warehouse 1
-		System.out.println("Record(s) found with findByWarehouseID(\"1\"):");
-		System.out.println("--------------------------------");
-		for (ProductData productdata : repository.findByWarehouseID("1")) {
-			System.out.println(productdata);
-		}
-		System.out.println();
-
-		// Fetch all products of Warehouse 2
-		System.out.println("Record(s) found with findByWarehouseID(\"2\"):");
-		System.out.println("--------------------------------");
-		for (ProductData productdata : repository.findByWarehouseID("2")) {
-			System.out.println(productdata);
-		}
-
+		System.out.println("Erfolgreich 300 Produkte für die Vertiefung angelegt.");
 	}
 
 }

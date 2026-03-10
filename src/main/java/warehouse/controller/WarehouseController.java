@@ -13,22 +13,47 @@ public class WarehouseController {
     @Autowired
     private WarehouseRepository repository;
 
-    // GK: POST /product - Fügt ein Produkt hinzu
+    // --- PRODUCT ENDPOINTS ---
+
     @PostMapping("/product")
     public ProductData addProduct(@RequestBody ProductData product) {
         return repository.save(product);
     }
 
-    // GK: GET /product - Alle Produkte abrufen
     @GetMapping("/product")
     public List<ProductData> getAllProducts() {
         return repository.findAll();
     }
 
-    // GK: GET /warehouse - Alle Lagerstandorte abrufen
-    // (In der GK-Stufe interpretieren wir das als Liste aller Bestände)
+    @GetMapping("/product/{id}")
+    public ProductData getProductById(@PathVariable String id) {
+        return repository.findByProductID(id);
+    }
+
+    @DeleteMapping("/product/{id}")
+    public void deleteProduct(@PathVariable String id) {
+        // Löscht alle Einträge dieses Produkts über alle Lager hinweg
+        List<ProductData> products = repository.findAll();
+        products.stream()
+                .filter(p -> p.getProductID().equals(id))
+                .forEach(p -> repository.delete(p));
+    }
+
+    // --- WAREHOUSE ENDPOINTS ---
+
     @GetMapping("/warehouse")
     public List<ProductData> getAllWarehouseData() {
         return repository.findAll();
+    }
+
+    @GetMapping("/warehouse/{id}")
+    public List<ProductData> getWarehouseById(@PathVariable String id) {
+        return repository.findByWarehouseID(id);
+    }
+
+    @DeleteMapping("/warehouse/{id}")
+    public void deleteWarehouse(@PathVariable String id) {
+        List<ProductData> data = repository.findByWarehouseID(id);
+        repository.deleteAll(data);
     }
 }
